@@ -1,7 +1,17 @@
 import streamlit as st
-import pandas as pd
+import tensorflow as tf
+import pickle
 
 st.set_page_config(layout="wide")
+
+
+@st.cache_resource
+def load_model():
+    return tf.keras.models.load_model("finaltoxicmodel.h5")
+
+
+loaded_toxic_model = load_model()
+
 st.markdown(
     """<h1 style='color: #3498db; text-align: center;'>️Toxic Comment Classifier</h1>""",
     unsafe_allow_html=True,
@@ -93,11 +103,7 @@ with model_tab.expander("Model Development Overview"):
 make_preds.subheader("Classify Text")
 
 
-import tensorflow as tf
-import pickle
-
 # Load the toxic comment classifier model and text vectorization layer
-loaded_toxic_model = tf.keras.models.load_model("finaltoxicmodel.h5")
 from_disk = pickle.load(open("tv_layer.pkl", "rb"))
 new_v = tf.keras.layers.TextVectorization.from_config(from_disk["config"])
 new_v.adapt(tf.data.Dataset.from_tensor_slices(["xyz"]))
